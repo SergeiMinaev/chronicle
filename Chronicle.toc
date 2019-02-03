@@ -1,0 +1,9 @@
+## Title: Chronicle
+## Notes: Save your history
+##
+## Interface: 80000
+## SavedVariables: CHRONICLE_DB
+##
+## Version: 0.0.1
+## Author: Sergei Minaev
+Chronicle.lua
