@@ -22,17 +22,17 @@ MAX_QUESTS_NUMBER = 70000
 LOGGED_HKS_ALL = nil
 -- 'today_hks' at start of the session
 -- It will re-init at 00:00
+LOGGED_HKS_TODAY = nil
 LOGGED_TS = nil
 LOGGED_PLAYED_TODAY = nil
-LOGGED_HKS_TODAY = nil
 -- DAY at start of the session
 -- It will re-init at 00:00 
-OGGED_DAY = nil 
-EAR = nil
-ONTH = nil
-AY = nil
-EALM = nil
-LAYER = nil
+LOGGED_DAY = nil 
+YEAR = nil
+MONTH = nil
+DAY = nil
+REALM = nil
+PLAYER = nil
 
 SLASH_CHRONICLE1 = "/chronicle"
 SlashCmdList["CHRONICLE"] = function(msg)
