@@ -134,6 +134,7 @@ buttonQ:SetScript("OnClick", function()
   end
   my_frame = create_frame()
 	my_frame.text:SetText("Total quests completed: "..cnt)
+  draw_quests_done()
 end)
 
 local buttonTP = CreateFrame("Button", nil, frame)
@@ -210,8 +211,10 @@ function saveLevelInfo()
   if not CHRONICLE_DB[REALM][PLAYER]['levels'][player_level]['ding_at'] then
     CHRONICLE_DB[REALM][PLAYER]['levels'][player_level]['ding_at'] = timestamp
   end
-  if not CHRONICLE_DB[REALM][PLAYER]['levels'][player_level]['ding_at_str'] then
-    CHRONICLE_DB[REALM][PLAYER]['levels'][player_level]['ding_at_str'] = dt 
+  if not CHRONICLE_DB[REALM][PLAYER]['levels']
+    [player_level]['ding_at_str'] then
+    CHRONICLE_DB[REALM][PLAYER]['levels']
+      [player_level]['ding_at_str'] = dt 
   end
 end
 
@@ -257,11 +260,10 @@ function save_prof_info(prof_id)
       [prof_id][Y][m][d][skillLvl] then
       CHRONICLE_DB[REALM][PLAYER]['profs'][prof_id][Y][m][d][skillLvl] = {}
     end
-  end
-  if not CHRONICLE_DB[REALM][PLAYER]['profs'][prof_id]
-    [Y][m][d][skillLvl]['ts'] then
-    CHRONICLE_DB[REALM][PLAYER]['profs'][prof_id]
-      [Y][m][d][skillLvl]['ts'] = ts
+    if not CHRONICLE_DB[REALM][PLAYER]['profs'][prof_id][Y][m][d][skillLvl]['ts'] then
+      CHRONICLE_DB[REALM][PLAYER]['profs'][prof_id]
+        [Y][m][d][skillLvl]['ts'] = ts
+    end
   end
   CHRONICLE_DB[REALM][PLAYER]['profs'][prof_id]['cur_skill'] = skillLvl
 end
@@ -398,14 +400,12 @@ function handle_today_played()
   today_played = cur_ts - LOGGED_TS + LOGGED_PLAYED_TODAY
   CHRONICLE_DB[REALM][PLAYER]['data']
     [YEAR][MONTH][DAY]['today_played'] = today_played
-  print('today_played: '..today_played)
 end
 
 function handle_today_hks()
   local honorableKills, dishonorableKills, highestRank = GetPVPLifetimeStats()
   local today_hks = honorableKills - LOGGED_HKS_ALL + LOGGED_HKS_TODAY
   CHRONICLE_DB[REALM][PLAYER]['data'][YEAR][MONTH][DAY]['today_hks'] = today_hks
-  print('today_hks: '..today_hks)
 end
 
 function count_hk_total()
@@ -423,7 +423,7 @@ function draw_time_played()
     x_pos = 0
     -- 2019-01-01
     start_ts = 1546344732
-    stop_ts = time()
+    stop_ts = time() + 86400
     x_pos = 0
     local perc_use = nil
     -- dirty way to go through dates
@@ -458,8 +458,49 @@ function draw_time_played()
   end
 end
 
+function draw_quests_done()
+  MAX_QUESTS = 1000
+  if my_frame then
+    my_frame:Hide()
+    my_frame.used = nil
+  end
+  my_frame = create_frame()
+  x_pos = 0
+  -- 2019-01-01
+  start_ts = 1546344732
+  stop_ts = time() + 86400
+  x_pos = 0
+  local perc_use = nil
+  -- dirty way to go through dates
+  while start_ts <= stop_ts do
+    local line = my_frame:CreateTexture()
+    line:SetColorTexture(0.8, 0.8, 0.8, 0.3)
+    l_year = date('%Y', start_ts)
+    l_month = date('%m', start_ts)
+    l_day = date('%d', start_ts)
+    if CHRONICLE_DB[REALM][PLAYER]['data'][l_year] then
+      if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month] then
+        if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
+        local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
+          ['q_done']
+          if tp then
+            perc = tp / MAX_QUESTS * 100
+            line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
+            perc_use = perc
+          end
+        end
+      end
+    end
+    if perc_use then
+      line:SetSize(5, perc_use*3)
+      line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
+      x_pos = x_pos + 5
+    end
+    start_ts = start_ts + 86400
+  end
+end
+
 function draw_prof(prof_id)
-  print('draw_prof()')
   if my_frame then
     my_frame:Hide()
     my_frame.used = nil
@@ -486,15 +527,12 @@ function draw_prof(prof_id)
         [l_year][l_month] then
         if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_id]
           [l_year][l_month][l_day] then
-          --print('date: '..l_year..' '..l_month..' '..l_day)
           for a, b in pairs(CHRONICLE_DB[REALM][PLAYER]['profs'][prof_id]
             [l_year][l_month][l_day]) do
-            --print('a: '..tostring(a)..', b: '..tostring(b['ts']))
             if a > cur_skill then
               cur_skill = a
             end
           end
-          print('date: '..l_day..', skill: '..cur_skill)
         end
       end
     end
