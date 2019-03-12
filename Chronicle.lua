@@ -94,7 +94,7 @@ function create_frame()
   frameTextInfo.text = frameTextInfo:CreateFontString(nil, "ARTWORK")
   frameTextInfo.text:SetFont("Fonts\\ARIALN.ttf", 13)
   frameTextInfo.text:SetPoint("CENTER",0,0)
-  frameTextInfo.text:SetText("Chronicle\nqweqwe\nqweqwe\n")
+  frameTextInfo.text:SetText("Chronicle\n")
   frame.used = true
   return frameTextInfo
 end
@@ -162,8 +162,14 @@ buttonMining:SetText("Mining")
 buttonMining:SetScript("OnClick", function()
   draw_prof(7)
 end)
+local buttonGold = CreateFrame("Button", nil, frame)
+buttonGold:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -130)
+buttonGold:SetText("Gold")
+buttonGold:SetScript("OnClick", function()
+  draw_gold()
+end)
 local buttonClear = CreateFrame("Button", nil, frame)
-buttonClear:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -130)
+buttonClear:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -155)
 buttonClear:SetText("Clear")
 buttonClear:SetScript("OnClick", function()
   if my_frame then
@@ -184,6 +190,7 @@ setupButton(buttonTP)
 setupButton(buttonBS)
 setupButton(buttonFishing)
 setupButton(buttonMining)
+setupButton(buttonGold)
 setupButton(buttonClear)
 -- end buttons
 
@@ -545,4 +552,72 @@ function draw_prof(prof_id)
     end
     start_ts = start_ts + 86400
   end
+end
+
+function draw_gold()
+  MAX_VAL = get_max_val('money')
+  if my_frame then
+    my_frame:Hide()
+    my_frame.used = nil
+  end
+  my_frame = create_frame()
+  x_pos = 0
+  -- 2019-01-01
+  start_ts = 1546344732
+  stop_ts = time() + 86400
+  x_pos = 0
+  local perc_use = nil
+  -- dirty way to go through dates
+  while start_ts <= stop_ts do
+    local line = my_frame:CreateTexture()
+    line:SetColorTexture(0.8, 0.8, 0.8, 0.3)
+    l_year = date('%Y', start_ts)
+    l_month = date('%m', start_ts)
+    l_day = date('%d', start_ts)
+    if CHRONICLE_DB[REALM][PLAYER]['data'][l_year] then
+      if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month] then
+        if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
+        local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
+          ['money']
+          if tp then
+            perc = tp / MAX_VAL * 100
+            line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
+            perc_use = perc
+          end
+        end
+      end
+    end
+    if perc_use then
+      line:SetSize(5, perc_use*3)
+      line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
+      x_pos = x_pos + 5
+    end
+    start_ts = start_ts + 86400
+  end
+end
+
+function get_max_val(name)
+  max_val = 0
+  start_ts = 1546344732
+  stop_ts = time() + 86400
+  while start_ts <= stop_ts do
+    l_year = date('%Y', start_ts)
+    l_month = date('%m', start_ts)
+    l_day = date('%d', start_ts)
+    if CHRONICLE_DB[REALM][PLAYER]['data'][l_year] then
+      if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month] then
+        if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
+        local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
+          [name]
+          if tp then
+            if tp > max_val then
+              max_val = tp
+            end
+          end
+        end
+      end
+    end
+    start_ts = start_ts + 86400
+  end
+  return max_val
 end
