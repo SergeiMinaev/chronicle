@@ -34,6 +34,8 @@ DAY = nil
 REALM = nil
 PLAYER = nil
 
+MAX_GRAPH_HEIGHT = 500
+
 SLASH_CHRONICLE1 = "/chronicle"
 SlashCmdList["CHRONICLE"] = function(msg)
   frame:Show()
@@ -41,8 +43,8 @@ end
 
 local my_frame = nil
 local scale = 1
-local frameWidth = 600
-local frameHeight = 400
+local frameWidth = 700
+local frameHeight = 530
 frame = CreateFrame("Frame","ChronicleFrame",UIParent)
 local texture = frame:CreateTexture()
 frame:SetSize(frameWidth, frameHeight)
@@ -94,7 +96,6 @@ function create_frame()
   frameTextInfo.text = frameTextInfo:CreateFontString(nil, "ARTWORK")
   frameTextInfo.text:SetFont("Fonts\\ARIALN.ttf", 13)
   frameTextInfo.text:SetPoint("CENTER",0,0)
-  frameTextInfo.text:SetText("Chronicle\n")
   frame.used = true
   return frameTextInfo
 end
@@ -421,6 +422,8 @@ function count_hk_total()
 end
 
 function draw_time_played()
+  MAX_VAL = get_max_val('time_played')
+  height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   if LATEST_TIME_PLAYED then
     if my_frame then
       my_frame:Hide()
@@ -432,6 +435,7 @@ function draw_time_played()
     start_ts = 1546344732
     stop_ts = time() + 86400
     x_pos = 0
+    draw_grid_lines(my_frame)
     local perc_use = nil
     -- dirty way to go through dates
     while start_ts <= stop_ts do
@@ -446,7 +450,7 @@ function draw_time_played()
           local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
             ['time_played']
             if tp then
-              perc = tp / LATEST_TIME_PLAYED * 100
+              perc = tp * height_mod
               line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
               perc_use = perc
             end
@@ -454,7 +458,7 @@ function draw_time_played()
         end
       end
       if perc_use then
-        line:SetSize(5, perc_use*3)
+        line:SetSize(5, perc_use)
         line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
         x_pos = x_pos + 5
       end
@@ -466,7 +470,9 @@ function draw_time_played()
 end
 
 function draw_quests_done()
-  MAX_QUESTS = 1000
+  MAX_VAL = get_max_val('q_done')
+  height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
+  --MAX_QUESTS = 1000
   if my_frame then
     my_frame:Hide()
     my_frame.used = nil
@@ -478,6 +484,7 @@ function draw_quests_done()
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
+  draw_grid_lines(my_frame)
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -491,7 +498,7 @@ function draw_quests_done()
         local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
           ['q_done']
           if tp then
-            perc = tp / MAX_QUESTS * 100
+            perc = tp * height_mod
             line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
             perc_use = perc
           end
@@ -499,7 +506,7 @@ function draw_quests_done()
       end
     end
     if perc_use then
-      line:SetSize(5, perc_use*3)
+      line:SetSize(5, perc_use)
       line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
       x_pos = x_pos + 5
     end
@@ -521,6 +528,7 @@ function draw_prof(prof_id)
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
+  draw_grid_lines(my_frame)
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -556,6 +564,7 @@ end
 
 function draw_gold()
   MAX_VAL = get_max_val('money')
+  height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   if my_frame then
     my_frame:Hide()
     my_frame.used = nil
@@ -567,6 +576,7 @@ function draw_gold()
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
+  draw_grid_lines(my_frame)
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -580,7 +590,7 @@ function draw_gold()
         local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
           ['money']
           if tp then
-            perc = tp / MAX_VAL * 100
+            perc = tp * height_mod
             line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
             perc_use = perc
           end
@@ -588,7 +598,7 @@ function draw_gold()
       end
     end
     if perc_use then
-      line:SetSize(5, perc_use*3)
+      line:SetSize(5, perc_use)
       line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
       x_pos = x_pos + 5
     end
@@ -620,4 +630,23 @@ function get_max_val(name)
     start_ts = start_ts + 86400
   end
   return max_val
+end
+
+function draw_grid_lines(frame)
+  local v = 0
+  while v <= 10 do
+    local v_line = frame:CreateTexture()
+    v_line:SetColorTexture(0.8, 0.8, 0.8, 0.6)
+    v_line:SetSize(600, 1)
+    v_line:SetPoint("BOTTOMLEFT", frame, 0, v*50+10)
+    v = v + 1
+  end
+  local h = 0
+  while h <= 12 do
+    local h_line = frame:CreateTexture()
+    h_line:SetColorTexture(0.8, 0.8, 0.8, 0.6)
+    h_line:SetSize(1, MAX_GRAPH_HEIGHT)
+    h_line:SetPoint("BOTTOMLEFT", frame, h*50, 10)
+    h = h + 1
+  end
 end
