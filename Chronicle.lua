@@ -169,8 +169,14 @@ buttonGold:SetText("Gold")
 buttonGold:SetScript("OnClick", function()
   draw_gold()
 end)
+local buttonAchievs = CreateFrame("Button", nil, frame)
+buttonAchievs:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -155)
+buttonAchievs:SetText("Achievements")
+buttonAchievs:SetScript("OnClick", function()
+  draw_achievs()
+end)
 local buttonClear = CreateFrame("Button", nil, frame)
-buttonClear:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -155)
+buttonClear:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -180)
 buttonClear:SetText("Clear")
 buttonClear:SetScript("OnClick", function()
   if my_frame then
@@ -192,6 +198,7 @@ setupButton(buttonBS)
 setupButton(buttonFishing)
 setupButton(buttonMining)
 setupButton(buttonGold)
+setupButton(buttonAchievs)
 setupButton(buttonClear)
 -- end buttons
 
@@ -589,6 +596,50 @@ function draw_gold()
         if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
         local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
           ['money']
+          if tp then
+            perc = tp * height_mod
+            line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
+            perc_use = perc
+          end
+        end
+      end
+    end
+    if perc_use then
+      line:SetSize(5, perc_use)
+      line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
+      x_pos = x_pos + 5
+    end
+    start_ts = start_ts + 86400
+  end
+end
+
+function draw_achievs()
+  MAX_VAL = get_max_val('achievs')
+  height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
+  if my_frame then
+    my_frame:Hide()
+    my_frame.used = nil
+  end
+  my_frame = create_frame()
+  x_pos = 0
+  -- 2019-01-01
+  start_ts = 1546344732
+  stop_ts = time() + 86400
+  x_pos = 0
+  local perc_use = nil
+  draw_grid_lines(my_frame)
+  -- dirty way to go through dates
+  while start_ts <= stop_ts do
+    local line = my_frame:CreateTexture()
+    line:SetColorTexture(0.8, 0.8, 0.8, 0.3)
+    l_year = date('%Y', start_ts)
+    l_month = date('%m', start_ts)
+    l_day = date('%d', start_ts)
+    if CHRONICLE_DB[REALM][PLAYER]['data'][l_year] then
+      if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month] then
+        if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
+        local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
+          ['achievs']
           if tp then
             perc = tp * height_mod
             line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
