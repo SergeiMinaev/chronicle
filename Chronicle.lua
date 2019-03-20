@@ -43,7 +43,7 @@ end
 
 local my_frame = nil
 local scale = 1
-local frameWidth = 700
+local frameWidth = 720
 local frameHeight = 530
 frame = CreateFrame("Frame","ChronicleFrame",UIParent)
 local texture = frame:CreateTexture()
@@ -65,7 +65,7 @@ frame:SetScript('OnEvent', function(self, event, ...) self[event](self, ...) end
 
 local frameTitle = CreateFrame("Frame", "ChronicleFrameTitle", frame)
 local titleTexture = frameTitle:CreateTexture()
-frameTitle:SetSize(frameWidth, 20)
+frameTitle:SetSize(frameWidth, 24)
 titleTexture:SetAllPoints()
 titleTexture:SetColorTexture(0.2, 0.2, 0.2, 1)
 frameTitle.background = titleTexture;
@@ -81,7 +81,7 @@ frameTitle.text:SetText("Chronicle")
 
 function create_frame()
   local frameTextInfo = CreateFrame("Frame", "FrameTextInfo", frame)
-  frameTextInfo:SetSize(frameWidth-75, frameHeight-10)
+  frameTextInfo:SetSize(frameWidth-110, frameHeight-10)
   frameTextInfo:SetBackdrop({
     bgFile="Interface\\ChatFrame\\ChatFrameBackground",
     edgeFile="Interface\\ChatFrame\\ChatFrameBackground",
@@ -91,7 +91,7 @@ function create_frame()
   })
   frameTextInfo:SetBackdropColor(0.1,0.1,0.1,1)
   frameTextInfo:SetBackdropBorderColor(0.2,0.2,0.2,1)
-  frameTextInfo:SetPoint("TOPLEFT", frame, "TOPLEFT", 70, -5)
+  frameTextInfo:SetPoint("TOPLEFT", frame, "TOPLEFT", 110, -5)
   frameTextInfo:Show()
   frameTextInfo.text = frameTextInfo:CreateFontString(nil, "ARTWORK")
   frameTextInfo.text:SetFont("Fonts\\ARIALN.ttf", 13)
@@ -101,8 +101,8 @@ function create_frame()
 end
 
 function setupButton(btn)
-	btn:SetWidth(60)
-	btn:SetHeight(22)
+	btn:SetWidth(100)
+	btn:SetHeight(24)
 	btn:SetNormalFontObject("GameFontNormal")
 	local ntex = btn:CreateTexture()
 	ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
@@ -182,12 +182,12 @@ buttonClear:SetScript("OnClick", function()
   if my_frame then
     my_frame:Hide()
     my_frame.used = nil
+    frameTitle.text:SetText("Chronicle")
   end
 end)
 local closeButton = CreateFrame("Button", nul, frameTitle)
-closeButton:SetPoint("TOPRIGHT", frameTitle)
+closeButton:SetPoint("TOPRIGHT", frameTitle, -2, 0)
 closeButton:SetText("x")
-closeButton:SetWidth(22)
 closeButton:SetScript("OnClick", function() 
 	frame:Hide()
 end)
@@ -200,6 +200,7 @@ setupButton(buttonMining)
 setupButton(buttonGold)
 setupButton(buttonAchievs)
 setupButton(buttonClear)
+closeButton:SetWidth(25)
 -- end buttons
 
 -- prevent show 'time played' msg in chat when it requested by addon
@@ -429,6 +430,7 @@ function count_hk_total()
 end
 
 function draw_time_played()
+  frameTitle.text:SetText("Chronicle - Time played")
   MAX_VAL = get_max_val('time_played')
   height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   if LATEST_TIME_PLAYED then
@@ -477,6 +479,7 @@ function draw_time_played()
 end
 
 function draw_quests_done()
+  frameTitle.text:SetText("Chronicle - Quests")
   MAX_VAL = get_max_val('q_done')
   height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   --MAX_QUESTS = 1000
@@ -522,6 +525,7 @@ function draw_quests_done()
 end
 
 function draw_prof(prof_id)
+  frameTitle.text:SetText("Chronicle - Professions")
   if my_frame then
     my_frame:Hide()
     my_frame.used = nil
@@ -571,6 +575,7 @@ function draw_prof(prof_id)
 end
 
 function draw_gold()
+  frameTitle.text:SetText("Chronicle - Gold")
   MAX_VAL = get_max_val('money')
   height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   if my_frame then
@@ -615,6 +620,7 @@ function draw_gold()
 end
 
 function draw_achievs()
+  frameTitle.text:SetText("Chronicle - Achievements")
   MAX_VAL = get_max_val('achievs')
   height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   if my_frame then
