@@ -442,7 +442,7 @@ function draw_time_played()
     start_ts = 1546344732
     stop_ts = time() + 86400
     x_pos = 0
-    draw_grid_lines(my_frame)
+    draw_grid_lines(my_frame, MAX_VAL, "time")
     local perc_use = nil
     -- dirty way to go through dates
     while start_ts <= stop_ts do
@@ -491,7 +491,7 @@ function draw_quests_done()
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
-  draw_grid_lines(my_frame)
+  draw_grid_lines(my_frame, MAX_VAL, "quests")
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -535,7 +535,7 @@ function draw_prof(prof_id)
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
-  draw_grid_lines(my_frame)
+  draw_grid_lines(my_frame, max_skill, "prof")
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -560,8 +560,9 @@ function draw_prof(prof_id)
     end
     if cur_skill > 0 then
       perc = cur_skill / max_skill * 100
+      line_h = MAX_GRAPH_HEIGHT / 100 * perc
       line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
-      line:SetSize(5, perc*3)
+      line:SetSize(5, line_h)
       line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
       x_pos = x_pos + 5
     end
@@ -583,7 +584,7 @@ function draw_gold()
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
-  draw_grid_lines(my_frame)
+  draw_grid_lines(my_frame, MAX_VAL, "gold")
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -627,7 +628,7 @@ function draw_achievs()
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
-  draw_grid_lines(my_frame)
+  draw_grid_lines(my_frame, MAX_VAL, "achievs")
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -683,13 +684,29 @@ function get_max_val(name)
   return max_val
 end
 
-function draw_grid_lines(frame)
+function draw_grid_lines(frame, max_val, val_type)
   local v = 0
   while v <= 10 do
+    cur_val = max_val / 10 * v
+    if val_type == "time" then
+      cur_val = math.floor(cur_val / 3600 + 0.5)
+      cur_val = cur_val.." hours"
+    elseif val_type == "gold" then
+      cur_val = math.floor(cur_val / 10000 + 0.5)
+      cur_val = cur_val.." gold"
+    else
+      cur_val = math.floor(cur_val + 0.5)
+    end
     local v_line = frame:CreateTexture()
     v_line:SetColorTexture(0.8, 0.8, 0.8, 0.6)
     v_line:SetSize(600, 1)
     v_line:SetPoint("BOTTOMLEFT", frame, 0, v*50+10)
+    if v > 0 then
+      v_line.text = frame:CreateFontString(nil, "ARTWORK")
+      v_line.text:SetFont("Fonts\\ARIALN.ttf", 12, "OUTLINE")
+      v_line.text:SetPoint("BOTTOMLEFT", 3, v*50+5)
+      v_line.text:SetText(cur_val)
+    end
     v = v + 1
   end
   local h = 0
