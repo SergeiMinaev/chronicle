@@ -35,6 +35,7 @@ REALM = nil
 PLAYER = nil
 
 MAX_GRAPH_HEIGHT = 500
+GRAPH_WIDTH = 610
 
 SLASH_CHRONICLE1 = "/chronicle"
 SlashCmdList["CHRONICLE"] = function(msg)
@@ -44,7 +45,7 @@ end
 local my_frame = nil
 local scale = 1
 local frameWidth = 720
-local frameHeight = 530
+local frameHeight = 550
 frame = CreateFrame("Frame","ChronicleFrame",UIParent)
 local texture = frame:CreateTexture()
 frame:SetSize(frameWidth, frameHeight)
@@ -79,9 +80,38 @@ frameTitle.text:SetFont("Fonts\\ARIALN.ttf", 14, "OUTLINE")
 frameTitle.text:SetPoint("CENTER",0,0)
 frameTitle.text:SetText("Chronicle")
 
+local chartTitle = CreateFrame("Frame", "ChronicleChartTitle", frame)
+local titleTexture = chartTitle:CreateTexture()
+chartTitle:SetSize(GRAPH_WIDTH, 24)
+titleTexture:SetAllPoints()
+titleTexture:SetColorTexture(0.1, 0.1, 0.1, 1)
+chartTitle.background = titleTexture;
+chartTitle:ClearAllPoints()
+chartTitle:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -5)
+chartTitle:SetScale(scale)
+chartTitle:Show()
+
+chartTitle.text = chartTitle:CreateFontString(nil, "ARTWORK")
+chartTitle.text:SetFont("Fonts\\ARIALN.ttf", 14, "OUTLINE")
+chartTitle.text:SetPoint("CENTER",0,0)
+
+local curDate = CreateFrame("Frame", "CurDate", frame)
+local titleTexture = curDate:CreateTexture()
+curDate:SetSize(70, 30)
+titleTexture:SetAllPoints()
+titleTexture:SetColorTexture(0.1, 0.1, 0.1, 1)
+curDate.background = titleTexture;
+curDate:ClearAllPoints()
+curDate:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 5, 10)
+curDate:SetScale(scale)
+curDate:Show()
+curDate.text = curDate:CreateFontString(nil, "ARTWORK")
+curDate.text:SetFont("Fonts\\ARIALN.ttf", 14, "OUTLINE")
+curDate.text:SetPoint("CENTER",0,0)
+
 function create_frame()
   local frameTextInfo = CreateFrame("Frame", "FrameTextInfo", frame)
-  frameTextInfo:SetSize(frameWidth-110, frameHeight-10)
+  frameTextInfo:SetSize(GRAPH_WIDTH, frameHeight-10)
   frameTextInfo:SetBackdrop({
     bgFile="Interface\\ChatFrame\\ChatFrameBackground",
     edgeFile="Interface\\ChatFrame\\ChatFrameBackground",
@@ -329,6 +359,7 @@ C_Timer.NewTicker(10, function()
   count_hk_total()
   handle_money()
   handle_achievements()
+  curDate.text:SetText(get_date().."\n"..get_time())
 end)
 
 function frame:TIME_PLAYED_MSG(timePlayed, timePlayedAtLevel)
@@ -432,6 +463,8 @@ end
 function draw_time_played()
   frameTitle.text:SetText("Chronicle - Time played")
   MAX_VAL = get_max_val('time_played')
+  hours = math.floor(MAX_VAL / 3600 + 0.5)
+  chartTitle.text:SetText(hours.. " hours played")
   height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   if LATEST_TIME_PLAYED then
     if my_frame then
@@ -479,8 +512,9 @@ function draw_time_played()
 end
 
 function draw_quests_done()
-  frameTitle.text:SetText("Chronicle - Quests")
   MAX_VAL = get_max_val('q_done')
+  frameTitle.text:SetText("Chronicle - Quests")
+  chartTitle.text:SetText(MAX_VAL.. " quests done")
   height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   --MAX_QUESTS = 1000
   if my_frame then
@@ -526,6 +560,7 @@ end
 
 function draw_prof(prof_id)
   frameTitle.text:SetText("Chronicle - Professions")
+  chartTitle.text:SetText("")
   if my_frame then
     my_frame:Hide()
     my_frame.used = nil
@@ -577,6 +612,8 @@ end
 function draw_gold()
   frameTitle.text:SetText("Chronicle - Gold")
   MAX_VAL = get_max_val('money')
+  max_gold = math.floor(MAX_VAL / 10000 + 0.5)
+  chartTitle.text:SetText("Maximum gold amount - "..max_gold)
   height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   if my_frame then
     my_frame:Hide()
@@ -622,6 +659,7 @@ end
 function draw_achievs()
   frameTitle.text:SetText("Chronicle - Achievements")
   MAX_VAL = get_max_val('achievs')
+  chartTitle.text:SetText(MAX_VAL.." achievents")
   height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
   if my_frame then
     my_frame:Hide()
@@ -723,4 +761,16 @@ function draw_grid_lines(frame, max_val, val_type)
     h_line:SetPoint("BOTTOMLEFT", frame, h*50, 10)
     h = h + 1
   end
+end
+
+function get_date()
+  local timestamp = time()
+  local dt = date('%Y.%m.%d', timestamp)
+  return dt
+end
+
+function get_time()
+  local timestamp = time()
+  local dt = date('%H:%M', timestamp)
+  return dt
 end
