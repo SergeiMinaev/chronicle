@@ -40,6 +40,7 @@ GRAPH_WIDTH = 610
 SLASH_CHRONICLE1 = "/chronicle"
 SlashCmdList["CHRONICLE"] = function(msg)
   frame:Show()
+  draw_time_played()
 end
 
 local my_frame = nil
@@ -62,7 +63,7 @@ frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("WHO_LIST_UPDATE")
 frame:RegisterEvent("TIME_PLAYED_MSG")
 frame:SetScript('OnEvent', function(self, event, ...) self[event](self, ...) end)
---frame:Hide()
+frame:Hide()
 
 local frameTitle = CreateFrame("Frame", "ChronicleFrameTitle", frame)
 local titleTexture = frameTitle:CreateTexture()
