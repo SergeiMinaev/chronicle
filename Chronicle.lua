@@ -477,7 +477,7 @@ function draw_time_played()
     start_ts = 1546344732
     stop_ts = time() + 86400
     x_pos = 0
-    draw_grid_lines(my_frame, MAX_VAL, "time")
+    draw_grid_lines(my_frame, MAX_VAL, "time", start_ts, stop_ts)
     local perc_use = nil
     -- dirty way to go through dates
     while start_ts <= stop_ts do
@@ -528,7 +528,7 @@ function draw_quests_done()
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
-  draw_grid_lines(my_frame, MAX_VAL, "quests")
+  draw_grid_lines(my_frame, MAX_VAL, "quests", start_ts, stop_ts)
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -574,7 +574,7 @@ function draw_prof(prof_id)
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
-  draw_grid_lines(my_frame, max_skill, "prof")
+  draw_grid_lines(my_frame, max_skill, "prof", start_ts, stop_ts)
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -626,7 +626,7 @@ function draw_gold()
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
-  draw_grid_lines(my_frame, MAX_VAL, "gold")
+  draw_grid_lines(my_frame, MAX_VAL, "gold", start_ts, stop_ts)
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -672,7 +672,7 @@ function draw_achievs()
   stop_ts = time() + 86400
   x_pos = 0
   local perc_use = nil
-  draw_grid_lines(my_frame, MAX_VAL, "achievs")
+  draw_grid_lines(my_frame, MAX_VAL, "achievs", start_ts, stop_ts)
   -- dirty way to go through dates
   while start_ts <= stop_ts do
     local line = my_frame:CreateTexture()
@@ -728,7 +728,8 @@ function get_max_val(name)
   return max_val
 end
 
-function draw_grid_lines(frame, max_val, val_type)
+function draw_grid_lines(frame, max_val, val_type, start_ts, stop_ts)
+  local cur_ts = start_ts
   local v = 0
   while v <= 10 do
     cur_val = max_val / 10 * v
@@ -759,6 +760,16 @@ function draw_grid_lines(frame, max_val, val_type)
     h_line:SetColorTexture(0.8, 0.8, 0.8, 0.6)
     h_line:SetSize(1, MAX_GRAPH_HEIGHT)
     h_line:SetPoint("BOTTOMLEFT", frame, h*50, 10)
+    cur_ts = cur_ts + ((stop_ts - start_ts) / 12)
+    cur_dt = date('%Y.%m.%d', cur_ts)
+    if h > 0 then
+      if (h % 2 == 1) then
+        h_line.text = frame:CreateFontString(nil, "ARTWORK")
+        h_line.text:SetFont("Fonts\\ARIALN.ttf", 12, "OUTLINE")
+        h_line.text:SetPoint("BOTTOMLEFT", h*50-22, 10)
+        h_line.text:SetText(cur_dt)
+      end
+    end
     h = h + 1
   end
 end
