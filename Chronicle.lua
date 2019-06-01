@@ -55,6 +55,18 @@ texture:SetAllPoints()
 texture:SetColorTexture(0.1, 0.1, 0.1, 1)
 frame.background = texture;
 
+-- start buttons
+local buttonQ = CreateFrame("Button", nil, frame)
+local buttonTP = CreateFrame("Button", nil, frame)
+local buttonBS = CreateFrame("Button", nil, frame)
+local buttonFishing = CreateFrame("Button", nil, frame)
+local buttonMining = CreateFrame("Button", nil, frame)
+local buttonGold = CreateFrame("Button", nil, frame)
+local buttonAchievs = CreateFrame("Button", nil, frame)
+local buttonCooking = CreateFrame("Button", nil, frame)
+--local buttonClear = CreateFrame("Button", nil, frame)
+-- end buttons
+
 frame:ClearAllPoints()
 frame:SetBackdrop(StaticPopup1:GetBackdrop())
 frame:SetPoint("CENTER",UIParent)
@@ -153,86 +165,6 @@ function setupButton(btn)
 	ptex:SetAllPoints()
 	btn:SetPushedTexture(ptex)
 end
-
--- start buttons
-local buttonQ = CreateFrame("Button", nil, frame)
-buttonQ:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -5)
-buttonQ:SetText("Quests")
-buttonQ:SetScript("OnClick", function()
-  cnt = count_quests_completed()
-  if my_frame then
-    my_frame:Hide()
-    my_frame.used = nil
-  end
-  my_frame = create_frame()
-	my_frame.text:SetText("Total quests completed: "..cnt)
-  draw_quests_done()
-end)
-
-local buttonTP = CreateFrame("Button", nil, frame)
-buttonTP:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -30)
-buttonTP:SetText("Time played")
-buttonTP:SetScript("OnClick", function()
-  draw_time_played()
-end)
-
-local buttonBS = CreateFrame("Button", nil, frame)
-buttonBS:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -55)
-buttonBS:SetText("Blacksmith")
-buttonBS:SetScript("OnClick", function()
-  draw_prof(5)
-end)
-local buttonFishing = CreateFrame("Button", nil, frame)
-buttonFishing:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -80)
-buttonFishing:SetText("Fishing")
-buttonFishing:SetScript("OnClick", function()
-  draw_prof(8)
-end)
-local buttonMining = CreateFrame("Button", nil, frame)
-buttonMining:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -105)
-buttonMining:SetText("Mining")
-buttonMining:SetScript("OnClick", function()
-  draw_prof(7)
-end)
-local buttonGold = CreateFrame("Button", nil, frame)
-buttonGold:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -130)
-buttonGold:SetText("Gold")
-buttonGold:SetScript("OnClick", function()
-  draw_gold()
-end)
-local buttonAchievs = CreateFrame("Button", nil, frame)
-buttonAchievs:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -155)
-buttonAchievs:SetText("Achievements")
-buttonAchievs:SetScript("OnClick", function()
-  draw_achievs()
-end)
-local buttonClear = CreateFrame("Button", nil, frame)
-buttonClear:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -180)
-buttonClear:SetText("Clear")
-buttonClear:SetScript("OnClick", function()
-  if my_frame then
-    my_frame:Hide()
-    my_frame.used = nil
-    frameTitle.text:SetText("Chronicle")
-  end
-end)
-local closeButton = CreateFrame("Button", nul, frameTitle)
-closeButton:SetPoint("TOPRIGHT", frameTitle, -2, 0)
-closeButton:SetText("x")
-closeButton:SetScript("OnClick", function() 
-	frame:Hide()
-end)
-setupButton(closeButton)
-setupButton(buttonQ)
-setupButton(buttonTP)
-setupButton(buttonBS)
-setupButton(buttonFishing)
-setupButton(buttonMining)
-setupButton(buttonGold)
-setupButton(buttonAchievs)
-setupButton(buttonClear)
-closeButton:SetWidth(25)
--- end buttons
 
 -- prevent show 'time played' msg in chat when it requested by addon
 local requesting
@@ -376,6 +308,94 @@ function frame:ADDON_LOADED()
   PLAYER = UnitName("player");
   init_db()
   init_today_hks()
+  --print(CHRONICLE_DB[REALM][PLAYER]['profs'][6])
+  -- start buttons
+  local btn_vpos = -5
+  local btn_vpos_offset = 25
+  buttonTP:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonTP:SetText("Time played")
+  buttonTP:SetScript("OnClick", function()
+    draw_time_played()
+  end)
+  btn_vpos = btn_vpos - btn_vpos_offset
+  buttonQ:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonQ:SetText("Quests")
+  buttonQ:SetScript("OnClick", function()
+    cnt = count_quests_completed()
+    if my_frame then
+      my_frame:Hide()
+      my_frame.used = nil
+    end
+    my_frame = create_frame()
+    my_frame.text:SetText("Total quests completed: "..cnt)
+    draw_quests_done()
+  end)
+  btn_vpos = btn_vpos - btn_vpos_offset
+  buttonGold:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonGold:SetText("Gold")
+  buttonGold:SetScript("OnClick", function()
+    draw_gold()
+  end)
+  btn_vpos = btn_vpos - btn_vpos_offset
+  buttonAchievs:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonAchievs:SetText("Achievements")
+  buttonAchievs:SetScript("OnClick", function()
+    draw_achievs()
+  end)
+
+  btn_vpos = btn_vpos - btn_vpos_offset
+  buttonBS:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonBS:SetText("Blacksmith")
+  buttonBS:SetScript("OnClick", function()
+    draw_prof(5)
+  end)
+  btn_vpos = btn_vpos - btn_vpos_offset
+  buttonMining:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonMining:SetText("Mining")
+  buttonMining:SetScript("OnClick", function()
+    draw_prof(7)
+  end)
+  btn_vpos = btn_vpos - btn_vpos_offset
+  buttonFishing:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonFishing:SetText("Fishing")
+  buttonFishing:SetScript("OnClick", function()
+    draw_prof(8)
+  end)
+  btn_vpos = btn_vpos - btn_vpos_offset
+  buttonCooking:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonCooking:SetText("Cooking")
+  buttonCooking:SetScript("OnClick", function()
+    draw_prof(6)
+  end)
+  --btn_vpos = btn_vpos - btn_vpos_offset
+  --buttonClear:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  --buttonClear:SetText("Clear")
+  --buttonClear:SetScript("OnClick", function()
+  --  if my_frame then
+  --    my_frame:Hide()
+  --    my_frame.used = nil
+  --    frameTitle.text:SetText("Chronicle")
+  --  end
+  --end)
+  local closeButton = CreateFrame("Button", nul, frameTitle)
+  closeButton:SetPoint("TOPRIGHT", frameTitle, -2, 0)
+  closeButton:SetText("x")
+  closeButton:SetScript("OnClick", function() 
+    frame:Hide()
+  end)
+  setupButton(closeButton)
+  setupButton(buttonQ)
+  setupButton(buttonTP)
+  setupButton(buttonBS)
+  setupButton(buttonFishing)
+  setupButton(buttonMining)
+  setupButton(buttonGold)
+  setupButton(buttonAchievs)
+  setupButton(buttonCooking)
+  --setupButton(buttonClear)
+  closeButton:SetWidth(25)
+  -- end buttons
+
 end
 
 function handle_money()
