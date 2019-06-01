@@ -359,6 +359,15 @@ function frame:ADDON_LOADED()
   end)
   setupButton(buttonAchievs)
 
+  local closeButton = CreateFrame("Button", nul, frameTitle)
+  closeButton:SetPoint("TOPRIGHT", frameTitle, -2, 0)
+  closeButton:SetText("x")
+  closeButton:SetScript("OnClick", function() 
+    frame:Hide()
+  end)
+  setupButton(closeButton)
+  closeButton:SetWidth(25)
+
   if CHRONICLE_DB[REALM][PLAYER]['profs']['Blacksmith'] then
     btn_vpos = btn_vpos - btn_vpos_offset
     buttonBS:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
@@ -496,14 +505,6 @@ function frame:ADDON_LOADED()
   --  end
   --end)
   --setupButton(buttonClear)
-  local closeButton = CreateFrame("Button", nul, frameTitle)
-  closeButton:SetPoint("TOPRIGHT", frameTitle, -2, 0)
-  closeButton:SetText("x")
-  closeButton:SetScript("OnClick", function() 
-    frame:Hide()
-  end)
-  setupButton(closeButton)
-  closeButton:SetWidth(25)
   -- end buttons
 
 end
@@ -591,7 +592,12 @@ function count_hk_total()
   CHRONICLE_DB[REALM][PLAYER]['data'][YEAR][MONTH][DAY]['hk_total'] = honorableKills
 end
 function get_line_width(start_ts, stop_ts)
-  local w = (GRAPH_WIDTH - 11) / ((stop_ts - start_ts) / 86400)
+  local w = (stop_ts - start_ts) / 86400
+  if w > 1 then
+    w = (GRAPH_WIDTH - 11) / w
+  else
+    w = GRAPH_WIDTH - 11
+  end
   return w
 end
 function draw_time_played()
@@ -607,7 +613,7 @@ function draw_time_played()
     end
     my_frame = create_frame()
     start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
-    stop_ts = time() + 86400
+    stop_ts = time()
     line_width = get_line_width(start_ts, stop_ts)
     x_pos = 0
     draw_grid_lines(my_frame, MAX_VAL, "time", start_ts, stop_ts)
@@ -657,7 +663,7 @@ function draw_quests_done()
   my_frame = create_frame()
   x_pos = 0
   start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
-  stop_ts = time() + 86400
+  stop_ts = time()
   line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
@@ -703,7 +709,7 @@ function draw_prof(prof_name_en)
   local cur_skill = 0
   x_pos = 0
   start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
-  stop_ts = time() + 86400
+  stop_ts = time()
   line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
@@ -755,7 +761,7 @@ function draw_gold()
   my_frame = create_frame()
   x_pos = 0
   start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
-  stop_ts = time() + 86400
+  stop_ts = time()
   line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
@@ -801,7 +807,7 @@ function draw_achievs()
   my_frame = create_frame()
   x_pos = 0
   start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
-  stop_ts = time() + 86400
+  stop_ts = time()
   line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
@@ -837,8 +843,8 @@ end
 
 function get_max_val(name)
   max_val = 0
-  start_ts = 1546344732
-  stop_ts = time() + 86400
+  start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
+  stop_ts = time()
   while start_ts <= stop_ts do
     l_year = date('%Y', start_ts)
     l_month = date('%m', start_ts)
