@@ -318,6 +318,9 @@ function frame:ADDON_LOADED()
   PLAYER = UnitName("player");
   init_db()
   init_today_hks()
+  if not CHRONICLE_DB[REALM][PLAYER]['start_ts'] then
+    CHRONICLE_DB[REALM][PLAYER]['start_ts'] = time()
+  end
   -- start buttons
   local btn_vpos = -5
   local btn_vpos_offset = 25
@@ -587,7 +590,10 @@ function count_hk_total()
   honorableKills, dishonorableKills, highestRank = GetPVPLifetimeStats()
   CHRONICLE_DB[REALM][PLAYER]['data'][YEAR][MONTH][DAY]['hk_total'] = honorableKills
 end
-
+function get_line_width(start_ts, stop_ts)
+  local w = (GRAPH_WIDTH - 11) / ((stop_ts - start_ts) / 86400)
+  return w
+end
 function draw_time_played()
   frameTitle.text:SetText("Chronicle - Time played")
   MAX_VAL = get_max_val('time_played')
@@ -600,10 +606,9 @@ function draw_time_played()
       my_frame.used = nil
     end
     my_frame = create_frame()
-    x_pos = 0
-    -- 2019-01-01
-    start_ts = 1546344732
+    start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
     stop_ts = time() + 86400
+    line_width = get_line_width(start_ts, stop_ts)
     x_pos = 0
     draw_grid_lines(my_frame, MAX_VAL, "time", start_ts, stop_ts)
     local perc_use = nil
@@ -628,9 +633,9 @@ function draw_time_played()
         end
       end
       if perc_use then
-        line:SetSize(5, perc_use)
+        line:SetSize(line_width, perc_use)
         line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
-        x_pos = x_pos + 5
+        x_pos = x_pos + line_width
       end
       start_ts = start_ts + 86400
     end
@@ -651,9 +656,9 @@ function draw_quests_done()
   end
   my_frame = create_frame()
   x_pos = 0
-  -- 2019-01-01
-  start_ts = 1546344732
+  start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
   stop_ts = time() + 86400
+  line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
   draw_grid_lines(my_frame, MAX_VAL, "quests", start_ts, stop_ts)
@@ -678,9 +683,9 @@ function draw_quests_done()
       end
     end
     if perc_use then
-      line:SetSize(5, perc_use)
+      line:SetSize(line_width, perc_use)
       line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
-      x_pos = x_pos + 5
+      x_pos = x_pos + line_width
     end
     start_ts = start_ts + 86400
   end
@@ -697,9 +702,9 @@ function draw_prof(prof_name_en)
   local max_skill = 600
   local cur_skill = 0
   x_pos = 0
-  -- 2019-01-01
-  start_ts = 1546344732
+  start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
   stop_ts = time() + 86400
+  line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
   draw_grid_lines(my_frame, max_skill, "prof", start_ts, stop_ts)
@@ -729,9 +734,9 @@ function draw_prof(prof_name_en)
       perc = cur_skill / max_skill * 100
       line_h = MAX_GRAPH_HEIGHT / 100 * perc
       line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
-      line:SetSize(5, line_h)
+      line:SetSize(line_width, line_h)
       line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
-      x_pos = x_pos + 5
+      x_pos = x_pos + line_width
     end
     start_ts = start_ts + 86400
   end
@@ -749,9 +754,9 @@ function draw_gold()
   end
   my_frame = create_frame()
   x_pos = 0
-  -- 2019-01-01
-  start_ts = 1546344732
+  start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
   stop_ts = time() + 86400
+  line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
   draw_grid_lines(my_frame, MAX_VAL, "gold", start_ts, stop_ts)
@@ -776,9 +781,9 @@ function draw_gold()
       end
     end
     if perc_use then
-      line:SetSize(5, perc_use)
+      line:SetSize(line_width, perc_use)
       line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
-      x_pos = x_pos + 5
+      x_pos = x_pos + line_width
     end
     start_ts = start_ts + 86400
   end
@@ -795,9 +800,9 @@ function draw_achievs()
   end
   my_frame = create_frame()
   x_pos = 0
-  -- 2019-01-01
-  start_ts = 1546344732
+  start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
   stop_ts = time() + 86400
+  line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
   draw_grid_lines(my_frame, MAX_VAL, "achievs", start_ts, stop_ts)
@@ -822,9 +827,9 @@ function draw_achievs()
       end
     end
     if perc_use then
-      line:SetSize(5, perc_use)
+      line:SetSize(line_width, perc_use)
       line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
-      x_pos = x_pos + 5
+      x_pos = x_pos + line_width
     end
     start_ts = start_ts + 86400
   end
