@@ -78,7 +78,7 @@ local buttonTailoring = CreateFrame("Button", nil, frame)
 -- end buttons
 
 frame:ClearAllPoints()
-frame:SetBackdrop(StaticPopup1:GetBackdrop())
+frame:SetBackdrop(nil)
 frame:SetPoint("CENTER",UIParent)
 frame:SetScale(scale)
 frame:RegisterEvent("ADDON_LOADED")
