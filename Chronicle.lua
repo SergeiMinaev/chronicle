@@ -74,6 +74,7 @@ local buttonJewelcrafting = CreateFrame("Button", nil, frame)
 local buttonLeatherworking = CreateFrame("Button", nil, frame)
 local buttonSkinning = CreateFrame("Button", nil, frame)
 local buttonTailoring = CreateFrame("Button", nil, frame)
+local buttonHKs = CreateFrame("Button", nil, frame)
 --local buttonClear = CreateFrame("Button", nil, frame)
 -- end buttons
 
@@ -351,6 +352,15 @@ function frame:ADDON_LOADED()
     draw_gold()
   end)
   setupButton(buttonGold)
+
+  btn_vpos = btn_vpos - btn_vpos_offset
+  buttonHKs:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  buttonHKs:SetText("HKs")
+  buttonHKs:SetScript("OnClick", function()
+    draw_hks()
+  end)
+  setupButton(buttonHKs)
+
   btn_vpos = btn_vpos - btn_vpos_offset
   buttonAchievs:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
   buttonAchievs:SetText("Achievements")
@@ -824,6 +834,52 @@ function draw_achievs()
         if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
         local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
           ['achievs']
+          if tp then
+            perc = tp * height_mod
+            line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
+            perc_use = perc
+          end
+        end
+      end
+    end
+    if perc_use then
+      line:SetSize(line_width, perc_use)
+      line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
+      x_pos = x_pos + line_width
+    end
+    start_ts = start_ts + 86400
+  end
+end
+
+function draw_hks()
+  frameTitle.text:SetText("Chronicle - Honorable kills")
+  MAX_VAL = get_max_val('hk_total')
+  chartTitle.text:SetText("Total honorable kills - "..MAX_VAL)
+  height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
+  if my_frame then
+    my_frame:Hide()
+    my_frame.used = nil
+  end
+  my_frame = create_frame()
+  x_pos = 0
+  start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
+  stop_ts = time()
+  line_width = get_line_width(start_ts, stop_ts)
+  x_pos = 0
+  local perc_use = nil
+  draw_grid_lines(my_frame, MAX_VAL, "hk_total", start_ts, stop_ts)
+  -- dirty way to go through dates
+  while start_ts <= stop_ts do
+    local line = my_frame:CreateTexture()
+    line:SetColorTexture(0.8, 0.8, 0.8, 0.3)
+    l_year = date('%Y', start_ts)
+    l_month = date('%m', start_ts)
+    l_day = date('%d', start_ts)
+    if CHRONICLE_DB[REALM][PLAYER]['data'][l_year] then
+      if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month] then
+        if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
+        local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
+          ['hk_total']
           if tp then
             perc = tp * height_mod
             line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
