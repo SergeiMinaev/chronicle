@@ -378,131 +378,133 @@ function frame:ADDON_LOADED()
   setupButton(closeButton)
   closeButton:SetWidth(25)
 
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Blacksmith'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonBS:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonBS:SetText("Blacksmith")
-    buttonBS:SetScript("OnClick", function()
-      draw_prof("Blacksmith")
-    end)
-    setupButton(buttonBS)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Mining'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonMining:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonMining:SetText("Mining")
-    buttonMining:SetScript("OnClick", function()
-      draw_prof("Mining")
-    end)
-    setupButton(buttonMining)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Alchemy'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonAlchemy:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonAlchemy:SetText("Alchemy")
-    buttonAlchemy:SetScript("OnClick", function()
-      draw_prof("Alchemy")
-    end)
-    setupButton(buttonAlchemy)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Enchanting'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonEnchanting:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonEnchanting:SetText("Enchanting")
-    buttonEnchanting:SetScript("OnClick", function()
-      draw_prof("Enchanting")
-    end)
-    setupButton(buttonEnchanting)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Engineer'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonEngineer:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonEngineer:SetText("Engineer")
-    buttonEngineer:SetScript("OnClick", function()
-      draw_prof("Engineer")
-    end)
-    setupButton(buttonEngineer)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Herbalism'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonHerbalism:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonHerbalism:SetText("Herbalism")
-    buttonHerbalism:SetScript("OnClick", function()
-      draw_prof("Herbalism")
-    end)
-    setupButton(buttonHerbalism)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Inscription'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonInscription:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonInscription:SetText("Inscription")
-    buttonInscription:SetScript("OnClick", function()
-      draw_prof("Inscription")
-    end)
-    setupButton(buttonInscription)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Jewelcrafting'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonJewelcrafting:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonJewelcrafting:SetText("Jewelcrafting")
-    buttonJewelcrafting:SetScript("OnClick", function()
-      draw_prof("Jewelcrafting")
-    end)
-    setupButton(buttonJewelcrafting)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Leatherworking'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonLeatherworking:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonLeatherworking:SetText("Leatherworking")
-    buttonLeatherworking:SetScript("OnClick", function()
-      draw_prof("Leatherworking")
-    end)
-    setupButton(buttonLeatherworking)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Skinning'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonSkinning:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonSkinning:SetText("Skinning")
-    buttonSkinning:SetScript("OnClick", function()
-      draw_prof("Skinning")
-    end)
-    setupButton(buttonSkinning)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Tailoring'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonTailoring:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonTailoring:SetText("Tailoring")
-    buttonTailoring:SetScript("OnClick", function()
-      draw_prof("Tailoring")
-    end)
-    setupButton(buttonTailoring)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Cooking'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonCooking:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonCooking:SetText("Cooking")
-    buttonCooking:SetScript("OnClick", function()
-      draw_prof("Cooking")
-    end)
-    setupButton(buttonCooking)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Fishing'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonFishing:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonFishing:SetText("Fishing")
-    buttonFishing:SetScript("OnClick", function()
-      draw_prof("Fishing")
-    end)
-    setupButton(buttonFishing)
-  end
-  if CHRONICLE_DB[REALM][PLAYER]['profs']['Archaeology'] then
-    btn_vpos = btn_vpos - btn_vpos_offset
-    buttonArchaeology:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-    buttonArchaeology:SetText("Archaeology")
-    buttonArchaeology:SetScript("OnClick", function()
-      draw_prof("Archaeology")
-    end)
-    setupButton(buttonArchaeology)
+  if CHRONICLE_DB[REALM][PLAYER]['profs'] then
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Blacksmith'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonBS:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonBS:SetText("Blacksmith")
+      buttonBS:SetScript("OnClick", function()
+        draw_prof("Blacksmith")
+      end)
+      setupButton(buttonBS)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Mining'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonMining:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonMining:SetText("Mining")
+      buttonMining:SetScript("OnClick", function()
+        draw_prof("Mining")
+      end)
+      setupButton(buttonMining)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Alchemy'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonAlchemy:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonAlchemy:SetText("Alchemy")
+      buttonAlchemy:SetScript("OnClick", function()
+        draw_prof("Alchemy")
+      end)
+      setupButton(buttonAlchemy)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Enchanting'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonEnchanting:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonEnchanting:SetText("Enchanting")
+      buttonEnchanting:SetScript("OnClick", function()
+        draw_prof("Enchanting")
+      end)
+      setupButton(buttonEnchanting)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Engineer'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonEngineer:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonEngineer:SetText("Engineer")
+      buttonEngineer:SetScript("OnClick", function()
+        draw_prof("Engineer")
+      end)
+      setupButton(buttonEngineer)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Herbalism'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonHerbalism:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonHerbalism:SetText("Herbalism")
+      buttonHerbalism:SetScript("OnClick", function()
+        draw_prof("Herbalism")
+      end)
+      setupButton(buttonHerbalism)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Inscription'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonInscription:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonInscription:SetText("Inscription")
+      buttonInscription:SetScript("OnClick", function()
+        draw_prof("Inscription")
+      end)
+      setupButton(buttonInscription)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Jewelcrafting'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonJewelcrafting:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonJewelcrafting:SetText("Jewelcrafting")
+      buttonJewelcrafting:SetScript("OnClick", function()
+        draw_prof("Jewelcrafting")
+      end)
+      setupButton(buttonJewelcrafting)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Leatherworking'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonLeatherworking:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonLeatherworking:SetText("Leatherworking")
+      buttonLeatherworking:SetScript("OnClick", function()
+        draw_prof("Leatherworking")
+      end)
+      setupButton(buttonLeatherworking)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Skinning'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonSkinning:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonSkinning:SetText("Skinning")
+      buttonSkinning:SetScript("OnClick", function()
+        draw_prof("Skinning")
+      end)
+      setupButton(buttonSkinning)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Tailoring'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonTailoring:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonTailoring:SetText("Tailoring")
+      buttonTailoring:SetScript("OnClick", function()
+        draw_prof("Tailoring")
+      end)
+      setupButton(buttonTailoring)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Cooking'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonCooking:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonCooking:SetText("Cooking")
+      buttonCooking:SetScript("OnClick", function()
+        draw_prof("Cooking")
+      end)
+      setupButton(buttonCooking)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Fishing'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonFishing:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonFishing:SetText("Fishing")
+      buttonFishing:SetScript("OnClick", function()
+        draw_prof("Fishing")
+      end)
+      setupButton(buttonFishing)
+    end
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['Archaeology'] then
+      btn_vpos = btn_vpos - btn_vpos_offset
+      buttonArchaeology:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonArchaeology:SetText("Archaeology")
+      buttonArchaeology:SetScript("OnClick", function()
+        draw_prof("Archaeology")
+      end)
+      setupButton(buttonArchaeology)
+    end
   end
   --btn_vpos = btn_vpos - btn_vpos_offset
   --buttonClear:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
