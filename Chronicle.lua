@@ -604,7 +604,7 @@ function count_hk_total()
   CHRONICLE_DB[REALM][PLAYER]['data'][YEAR][MONTH][DAY]['hk_total'] = honorableKills
 end
 function get_line_width(start_ts, stop_ts)
-  local w = (stop_ts - start_ts) / 86400
+  local w = math.floor((stop_ts - start_ts) / 86400) + 1
   if w > 1 then
     w = (GRAPH_WIDTH - 11) / w
   else
