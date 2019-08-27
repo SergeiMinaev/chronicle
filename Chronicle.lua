@@ -37,6 +37,12 @@ PLAYER = nil
 MAX_GRAPH_HEIGHT = 500
 GRAPH_WIDTH = 610
 
+local IS_CLASSIC = false
+local version, build, rdate, tocversion = GetBuildInfo()
+if tocversion < 80000 then
+  IS_CLASSIC = true
+end
+
 SLASH_CHRONICLE1 = "/chronicle"
 SlashCmdList["CHRONICLE"] = function(msg)
   frame:Show()
@@ -286,7 +292,7 @@ function count_quests_completed()
   return count
 end
 
-C_Timer.NewTicker(10, function() 
+C_Timer.NewTicker(3, function()
   local ts = time()
   YEAR = date('%Y', ts)
   MONTH = date('%m', ts)
@@ -298,11 +304,13 @@ C_Timer.NewTicker(10, function()
   handle_today_played()
   handle_today_hks()
   saveLevelInfo()
-  handle_prof_info()
+  if IS_CLASSIC == false then
+    handle_prof_info()
+    handle_achievements()
+  end
   handle_quests()
   count_hk_total()
   handle_money()
-  handle_achievements()
   curDate.text:SetText(get_date().."\n"..get_time())
 end)
 
@@ -675,7 +683,7 @@ function draw_quests_done()
   my_frame = create_frame()
   x_pos = 0
   start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
-  stop_ts = time()
+  stop_ts = time() + 86400
   line_width = get_line_width(start_ts, stop_ts)
   x_pos = 0
   local perc_use = nil
@@ -902,7 +910,7 @@ end
 function get_max_val(name)
   max_val = 0
   start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
-  stop_ts = time()
+  stop_ts = time() + 86400
   while start_ts <= stop_ts do
     l_year = date('%Y', start_ts)
     l_month = date('%m', start_ts)
@@ -910,11 +918,12 @@ function get_max_val(name)
     if CHRONICLE_DB[REALM][PLAYER]['data'][l_year] then
       if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month] then
         if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
-        local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day]
-          [name]
-          if tp then
-            if tp > max_val then
-              max_val = tp
+          if CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day] then
+            local tp = CHRONICLE_DB[REALM][PLAYER]['data'][l_year][l_month][l_day][name]
+            if tp then
+              if tp > max_val then
+                max_val = tp
+              end
             end
           end
         end
