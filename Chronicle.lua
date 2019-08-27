@@ -37,30 +37,23 @@ PLAYER = nil
 MAX_GRAPH_HEIGHT = 500
 GRAPH_WIDTH = 610
 
-frame = nil
-scale = 1
-frameWidth = 720
-frameHeight = 550
-
 SLASH_CHRONICLE1 = "/chronicle"
 SlashCmdList["CHRONICLE"] = function(msg)
-  --createMainFrame()
   frame:Show()
   draw_time_played()
 end
 
-function createMainFrame()
-    frame = CreateFrame("Frame","ChronicleFrame", UIParent)
-    local texture = frame:CreateTexture()
-    frame:SetSize(frameWidth, frameHeight)
-    frame:SetPoint("CENTER")
-    texture:SetAllPoints()
-    texture:SetColorTexture(0.1, 0.1, 0.1, 1)
-    frame.background = texture;
-end
-
 local my_frame = nil
-createMainFrame()
+local scale = 1
+local frameWidth = 720
+local frameHeight = 550
+frame = CreateFrame("Frame","ChronicleFrame",UIParent)
+local texture = frame:CreateTexture()
+frame:SetSize(frameWidth, frameHeight)
+frame:SetPoint("CENTER")
+texture:SetAllPoints()
+texture:SetColorTexture(0.1, 0.1, 0.1, 1)
+frame.background = texture;
 
 -- start buttons
 local buttonQ = CreateFrame("Button", nil, frame)
@@ -157,7 +150,7 @@ function create_frame()
   frameTextInfo.text = frameTextInfo:CreateFontString(nil, "ARTWORK")
   frameTextInfo.text:SetFont("Fonts\\ARIALN.ttf", 13)
   frameTextInfo.text:SetPoint("CENTER",0,0)
-  --frame.used = true
+  frame.used = true
   return frameTextInfo
 end
 
@@ -376,7 +369,7 @@ function frame:ADDON_LOADED()
   end)
   setupButton(buttonAchievs)
 
-  local closeButton = CreateFrame("Button", nil, frameTitle)
+  local closeButton = CreateFrame("Button", nul, frameTitle)
   closeButton:SetPoint("TOPRIGHT", frameTitle, -2, 0)
   closeButton:SetText("x")
   closeButton:SetScript("OnClick", function() 
