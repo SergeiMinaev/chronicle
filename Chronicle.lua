@@ -66,9 +66,10 @@ local buttonQ = CreateFrame("Button", nil, frame)
 local buttonTP = CreateFrame("Button", nil, frame)
 local buttonBS = CreateFrame("Button", nil, frame)
 local buttonFishing = CreateFrame("Button", nil, frame)
+local buttonFirstAid = CreateFrame("Button", nil, frame)
 local buttonMining = CreateFrame("Button", nil, frame)
 local buttonGold = CreateFrame("Button", nil, frame)
-local buttonAchievs = CreateFrame("Button", nil, frame)
+-- local buttonAchievs = CreateFrame("Button", nil, frame)
 local buttonCooking = CreateFrame("Button", nil, frame)
 local buttonArchaeology = CreateFrame("Button", nil, frame)
 local buttonAlchemy = CreateFrame("Button", nil, frame)
@@ -85,11 +86,11 @@ local buttonHKs = CreateFrame("Button", nil, frame)
 -- end buttons
 
 frame:ClearAllPoints()
-frame:SetBackdrop(nil)
+-- attempt to call method 'SetBackdrop' (a nil value)
+-- frame:SetBackdrop(nil)
 frame:SetPoint("CENTER",UIParent)
 frame:SetScale(scale)
 frame:RegisterEvent("ADDON_LOADED")
-frame:RegisterEvent("WHO_LIST_UPDATE")
 frame:RegisterEvent("TIME_PLAYED_MSG")
 frame:SetScript('OnEvent', function(self, event, ...) self[event](self, ...) end)
 frame:Hide()
@@ -142,15 +143,16 @@ curDate.text:SetPoint("CENTER",0,0)
 function create_frame()
   local frameTextInfo = CreateFrame("Frame", "FrameTextInfo", frame)
   frameTextInfo:SetSize(GRAPH_WIDTH, frameHeight-10)
-  frameTextInfo:SetBackdrop({
-    bgFile="Interface\\ChatFrame\\ChatFrameBackground",
-    edgeFile="Interface\\ChatFrame\\ChatFrameBackground",
-    tile=true,
-    tileSize=5,
-    edgeSize=1,
-  })
-  frameTextInfo:SetBackdropColor(0.1,0.1,0.1,1)
-  frameTextInfo:SetBackdropBorderColor(0.2,0.2,0.2,1)
+  -- attempt to call method 'SetBackdrop' (a nil value)
+  -- frameTextInfo:SetBackdrop({
+  --   bgFile="Interface\\ChatFrame\\ChatFrameBackground",
+  --   edgeFile="Interface\\ChatFrame\\ChatFrameBackground",
+  --   tile=true,
+  --   tileSize=5,
+  --   edgeSize=1,
+  -- })
+  --frameTextInfo:SetBackdropColor(0.1,0.1,0.1,1)
+  --frameTextInfo:SetBackdropBorderColor(0.2,0.2,0.2,1)
   frameTextInfo:SetPoint("TOPLEFT", frame, "TOPLEFT", 110, -5)
   frameTextInfo:Show()
   frameTextInfo.text = frameTextInfo:CreateFontString(nil, "ARTWORK")
@@ -264,6 +266,52 @@ function save_prof_info(prof_id)
   CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name_en]['cur_skill'] = skillLvl
 end
 
+function save_prof_classic(prof_name, skillLvl)
+  local ts = time()
+  local dt = date('%Y-%m-%d %H:%M:%S', ts)
+  Y = date('%Y', ts)
+  m = date('%m', ts)
+  d = date('%d', ts)
+
+  if not CHRONICLE_DB[REALM][PLAYER]['profs'] then
+    CHRONICLE_DB[REALM][PLAYER]['profs'] = {}
+  end  
+  if not CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name] then
+    CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name] = {}
+  end  
+  if not CHRONICLE_DB[REALM][PLAYER]['profs']
+    [prof_name]['name'] then
+    CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name]['name'] = prof_name
+  end
+  if not CHRONICLE_DB[REALM][PLAYER]['profs']
+    [prof_name][Y] then
+    CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name][Y] = {}
+  end
+  if not CHRONICLE_DB[REALM][PLAYER]['profs']
+    [prof_name][Y][m] then
+    CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name][Y][m] = {}
+  end
+  if not CHRONICLE_DB[REALM][PLAYER]['profs']
+    [prof_name][Y][m][d] then
+    CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name][Y][m][d] = {}
+  end
+  local cur_skill = 0
+  if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name]['cur_skill'] then
+    cur_skill = CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name]['cur_skill']
+  end
+  if skillLvl > cur_skill then
+    if not CHRONICLE_DB[REALM][PLAYER]['profs']
+      [prof_name][Y][m][d][skillLvl] then
+      CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name][Y][m][d][skillLvl] = {}
+    end
+    if not CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name][Y][m][d][skillLvl]['ts'] then
+      CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name]
+        [Y][m][d][skillLvl]['ts'] = ts
+    end
+  end
+  CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name]['cur_skill'] = skillLvl
+end
+
 function handle_prof_info()
   prof1, prof2, archaeology, fishing, cooking, firstAid = GetProfessions()
   prof_list = {prof1, prof2, archaeology, fishing, cooking, firstAid}
@@ -272,6 +320,37 @@ function handle_prof_info()
       save_prof_info(prof_id)
     end
   end
+end
+
+-- Thanks to cocedrivers ( https://www.wowinterface.com/forums/member.php?u=199582 )
+function handle_profs_classic()
+	local section, primary, secondary, weapons, other = 0, {}, {}, {}, {}
+	for i = 1, GetNumSkillLines() do
+		local skillName, isHeader, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(i)
+		if isHeader then
+			section = section + 1
+			if section == 2 then
+				primary.n = skillName
+			elseif section == 3 then
+				secondary.n = skillName
+			elseif section == 4 then
+				weapons.n = skillName
+			end
+		else
+			tinsert( section == 2 and primary or section == 3 and secondary or section == 4 and weapons or other,  {skillName,skillRank,skillMaxRank} )
+		end
+	end
+	--for i = 1, #primary do
+	--    print('primary', unpack( primary[i] ) )
+	--end
+	--print('secondary', #secondary)
+	for i = 1, #secondary do
+		--for key, value in pairs(secondary[i]) do
+		--	print('key/val:', key, value)
+		--end
+		--print('secondary', secondary[i][1], secondary[i][2])
+    save_prof_classic(secondary[i][1], secondary[i][2])
+	end
 end
 
 function handle_quests()
@@ -283,7 +362,8 @@ function count_quests_completed()
   local i = 0
   local count = 0
   while i < MAX_QUESTS_NUMBER do
-    r = IsQuestFlaggedCompleted(i)
+    -- r = IsQuestFlaggedCompleted(i) <- not working in BC
+    r = C_QuestLog.IsQuestFlaggedCompleted(i)
     if r then
       count = count + 1
     end
@@ -307,6 +387,8 @@ C_Timer.NewTicker(3, function()
   if IS_CLASSIC == false then
     handle_prof_info()
     handle_achievements()
+  else
+    handle_profs_classic()
   end
   handle_quests()
   count_hk_total()
@@ -370,12 +452,12 @@ function frame:ADDON_LOADED()
   setupButton(buttonHKs)
 
   btn_vpos = btn_vpos - btn_vpos_offset
-  buttonAchievs:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-  buttonAchievs:SetText("Achievements")
-  buttonAchievs:SetScript("OnClick", function()
-    draw_achievs()
-  end)
-  setupButton(buttonAchievs)
+  --buttonAchievs:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+  --buttonAchievs:SetText("Achievements")
+  --buttonAchievs:SetScript("OnClick", function()
+  --  draw_achievs()
+  --end)
+  --setupButton(buttonAchievs)
 
   local closeButton = CreateFrame("Button", nul, frameTitle)
   closeButton:SetPoint("TOPRIGHT", frameTitle, -2, 0)
@@ -387,105 +469,105 @@ function frame:ADDON_LOADED()
   closeButton:SetWidth(25)
 
   if CHRONICLE_DB[REALM][PLAYER]['profs'] then
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Blacksmith'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonBS:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonBS:SetText("Blacksmith")
-      buttonBS:SetScript("OnClick", function()
-        draw_prof("Blacksmith")
-      end)
-      setupButton(buttonBS)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Mining'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonMining:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonMining:SetText("Mining")
-      buttonMining:SetScript("OnClick", function()
-        draw_prof("Mining")
-      end)
-      setupButton(buttonMining)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Alchemy'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonAlchemy:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonAlchemy:SetText("Alchemy")
-      buttonAlchemy:SetScript("OnClick", function()
-        draw_prof("Alchemy")
-      end)
-      setupButton(buttonAlchemy)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Enchanting'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonEnchanting:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonEnchanting:SetText("Enchanting")
-      buttonEnchanting:SetScript("OnClick", function()
-        draw_prof("Enchanting")
-      end)
-      setupButton(buttonEnchanting)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Engineer'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonEngineer:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonEngineer:SetText("Engineer")
-      buttonEngineer:SetScript("OnClick", function()
-        draw_prof("Engineer")
-      end)
-      setupButton(buttonEngineer)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Herbalism'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonHerbalism:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonHerbalism:SetText("Herbalism")
-      buttonHerbalism:SetScript("OnClick", function()
-        draw_prof("Herbalism")
-      end)
-      setupButton(buttonHerbalism)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Inscription'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonInscription:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonInscription:SetText("Inscription")
-      buttonInscription:SetScript("OnClick", function()
-        draw_prof("Inscription")
-      end)
-      setupButton(buttonInscription)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Jewelcrafting'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonJewelcrafting:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonJewelcrafting:SetText("Jewelcrafting")
-      buttonJewelcrafting:SetScript("OnClick", function()
-        draw_prof("Jewelcrafting")
-      end)
-      setupButton(buttonJewelcrafting)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Leatherworking'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonLeatherworking:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonLeatherworking:SetText("Leatherworking")
-      buttonLeatherworking:SetScript("OnClick", function()
-        draw_prof("Leatherworking")
-      end)
-      setupButton(buttonLeatherworking)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Skinning'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonSkinning:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonSkinning:SetText("Skinning")
-      buttonSkinning:SetScript("OnClick", function()
-        draw_prof("Skinning")
-      end)
-      setupButton(buttonSkinning)
-    end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Tailoring'] then
-      btn_vpos = btn_vpos - btn_vpos_offset
-      buttonTailoring:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonTailoring:SetText("Tailoring")
-      buttonTailoring:SetScript("OnClick", function()
-        draw_prof("Tailoring")
-      end)
-      setupButton(buttonTailoring)
-    end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Blacksmith'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonBS:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonBS:SetText("Blacksmith")
+    --  buttonBS:SetScript("OnClick", function()
+    --    draw_prof("Blacksmith")
+    --  end)
+    --  setupButton(buttonBS)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Mining'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonMining:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonMining:SetText("Mining")
+    --  buttonMining:SetScript("OnClick", function()
+    --    draw_prof("Mining")
+    --  end)
+    --  setupButton(buttonMining)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Alchemy'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonAlchemy:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonAlchemy:SetText("Alchemy")
+    --  buttonAlchemy:SetScript("OnClick", function()
+    --    draw_prof("Alchemy")
+    --  end)
+    --  setupButton(buttonAlchemy)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Enchanting'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonEnchanting:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonEnchanting:SetText("Enchanting")
+    --  buttonEnchanting:SetScript("OnClick", function()
+    --    draw_prof("Enchanting")
+    --  end)
+    --  setupButton(buttonEnchanting)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Engineer'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonEngineer:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonEngineer:SetText("Engineer")
+    --  buttonEngineer:SetScript("OnClick", function()
+    --    draw_prof("Engineer")
+    --  end)
+    --  setupButton(buttonEngineer)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Herbalism'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonHerbalism:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonHerbalism:SetText("Herbalism")
+    --  buttonHerbalism:SetScript("OnClick", function()
+    --    draw_prof("Herbalism")
+    --  end)
+    --  setupButton(buttonHerbalism)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Inscription'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonInscription:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonInscription:SetText("Inscription")
+    --  buttonInscription:SetScript("OnClick", function()
+    --    draw_prof("Inscription")
+    --  end)
+    --  setupButton(buttonInscription)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Jewelcrafting'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonJewelcrafting:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonJewelcrafting:SetText("Jewelcrafting")
+    --  buttonJewelcrafting:SetScript("OnClick", function()
+    --    draw_prof("Jewelcrafting")
+    --  end)
+    --  setupButton(buttonJewelcrafting)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Leatherworking'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonLeatherworking:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonLeatherworking:SetText("Leatherworking")
+    --  buttonLeatherworking:SetScript("OnClick", function()
+    --    draw_prof("Leatherworking")
+    --  end)
+    --  setupButton(buttonLeatherworking)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Skinning'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonSkinning:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonSkinning:SetText("Skinning")
+    --  buttonSkinning:SetScript("OnClick", function()
+    --    draw_prof("Skinning")
+    --  end)
+    --  setupButton(buttonSkinning)
+    --end
+    --if CHRONICLE_DB[REALM][PLAYER]['profs']['Tailoring'] then
+    --  btn_vpos = btn_vpos - btn_vpos_offset
+    --  buttonTailoring:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+    --  buttonTailoring:SetText("Tailoring")
+    --  buttonTailoring:SetScript("OnClick", function()
+    --    draw_prof("Tailoring")
+    --  end)
+    --  setupButton(buttonTailoring)
+    --end
     if CHRONICLE_DB[REALM][PLAYER]['profs']['Cooking'] then
       btn_vpos = btn_vpos - btn_vpos_offset
       buttonCooking:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
@@ -504,14 +586,14 @@ function frame:ADDON_LOADED()
       end)
       setupButton(buttonFishing)
     end
-    if CHRONICLE_DB[REALM][PLAYER]['profs']['Archaeology'] then
+    if CHRONICLE_DB[REALM][PLAYER]['profs']['First Aid'] then
       btn_vpos = btn_vpos - btn_vpos_offset
-      buttonArchaeology:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
-      buttonArchaeology:SetText("Archaeology")
-      buttonArchaeology:SetScript("OnClick", function()
-        draw_prof("Archaeology")
+      buttonFirstAid:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, btn_vpos)
+      buttonFirstAid:SetText("First Aid")
+      buttonFirstAid:SetScript("OnClick", function()
+        draw_prof("First Aid")
       end)
-      setupButton(buttonArchaeology)
+      setupButton(buttonFirstAid)
     end
   end
   --btn_vpos = btn_vpos - btn_vpos_offset
@@ -612,6 +694,8 @@ function count_hk_total()
   CHRONICLE_DB[REALM][PLAYER]['data'][YEAR][MONTH][DAY]['hk_total'] = honorableKills
 end
 function get_line_width(start_ts, stop_ts)
+  local start_date_str = date('%Y-%m-%d', start_ts)
+  local stop_date_str = date('%Y-%m-%d', stop_ts)
   local w = math.floor((stop_ts - start_ts) / 86400) + 1
   if w > 1 then
     w = (GRAPH_WIDTH - 11) / w
@@ -619,6 +703,7 @@ function get_line_width(start_ts, stop_ts)
     w = GRAPH_WIDTH - 11
   end
   return w
+  --print('line width between', start_date_str, 'and', stop_date_str)
 end
 function draw_time_played()
   frameTitle.text:SetText("Chronicle - Time played")
@@ -634,6 +719,11 @@ function draw_time_played()
     my_frame = create_frame()
     start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
     stop_ts = time()
+    diff = stop_ts - start_ts
+    week = 3600 * 24 * 7
+    if diff < week then
+	stop_ts = start_ts + week
+    end
     line_width = get_line_width(start_ts, stop_ts)
     x_pos = 0
     draw_grid_lines(my_frame, MAX_VAL, "time", start_ts, stop_ts)
@@ -719,52 +809,90 @@ end
 
 function draw_prof(prof_name_en)
   frameTitle.text:SetText("Chronicle - Professions")
-  chartTitle.text:SetText("")
-  if my_frame then
-    my_frame:Hide()
-    my_frame.used = nil
-  end
-  my_frame = create_frame()
-  local max_skill = 600
-  local cur_skill = 0
-  x_pos = 0
-  start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
-  stop_ts = time()
-  line_width = get_line_width(start_ts, stop_ts)
-  x_pos = 0
-  local perc_use = nil
-  draw_grid_lines(my_frame, max_skill, "prof", start_ts, stop_ts)
-  -- dirty way to go through dates
-  while start_ts <= stop_ts do
-    local line = my_frame:CreateTexture()
-    line:SetColorTexture(0.8, 0.8, 0.8, 0.3)
-    l_year = date('%Y', start_ts)
-    l_month = date('%m', start_ts)
-    l_day = date('%d', start_ts)
-    if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name_en]
-      [l_year] then
+  chartTitle.text:SetText(prof_name_en)
+  height_mod = MAX_GRAPH_HEIGHT / MAX_VAL
+  if LATEST_TIME_PLAYED then
+    if my_frame then
+      my_frame:Hide()
+      my_frame.used = nil
+    end
+    my_frame = create_frame()
+    local max_skill = 300
+    local cur_skill = 0
+    local prev_skill = 0
+    x_pos = 0
+    start_ts = CHRONICLE_DB[REALM][PLAYER]['start_ts']
+    keep_going = true
+    while (start_ts <= stop_ts) and keep_going do
+      l_year = date('%Y', start_ts)
+      l_month = date('%m', start_ts)
+      l_day = date('%d', start_ts)
       if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name_en]
-        [l_year][l_month] then
+          [l_year] then
         if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name_en]
-          [l_year][l_month][l_day] then
-          for a, b in pairs(CHRONICLE_DB[REALM][PLAYER]['profs']
-            [prof_name_en][l_year][l_month][l_day]) do
-            if a > cur_skill then
-              cur_skill = a
+            [l_year][l_month] then
+          if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name_en]
+              [l_year][l_month][l_day] then
+            for a, b in pairs(CHRONICLE_DB[REALM][PLAYER]['profs']
+                [prof_name_en][l_year][l_month][l_day]) do
+              keep_going = false
+              break
             end
           end
         end
       end
+      if keep_going then
+        start_ts = start_ts + 86400
+      end
     end
-    if cur_skill > 0 then
+    stop_ts = time()
+    diff = stop_ts - start_ts
+    --week = 3600 * 24 * 7
+    --if diff < week then
+    --  stop_ts = start_ts + week
+    --end
+    line_width = get_line_width(start_ts, stop_ts)
+    x_pos = 0
+    local perc_use = nil
+    draw_grid_lines(my_frame, max_skill, "prof", start_ts, stop_ts)
+    -- dirty way to go through dates
+    while start_ts <= stop_ts do
+      local line = my_frame:CreateTexture()
+      line:SetColorTexture(0.8, 0.8, 0.8, 0.3)
+      l_year = date('%Y', start_ts)
+      l_month = date('%m', start_ts)
+      l_day = date('%d', start_ts)
+      --print('tick', l_year, l_month, l_day)
+      prev_skill = cur_skill
+      if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name_en]
+        [l_year] then
+        if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name_en]
+          [l_year][l_month] then
+          if CHRONICLE_DB[REALM][PLAYER]['profs'][prof_name_en]
+            [l_year][l_month][l_day] then
+            for a, b in pairs(CHRONICLE_DB[REALM][PLAYER]['profs']
+              [prof_name_en][l_year][l_month][l_day]) do
+              if a > cur_skill then
+                cur_skill = a
+              end
+            end
+          end
+        end
+      end
+      if cur_skill ~= prev_skill then
+        line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
+      else
+        line:SetColorTexture(0.8, 0.8, 0.8, 0.3)
+      end
       perc = cur_skill / max_skill * 100
       line_h = MAX_GRAPH_HEIGHT / 100 * perc
-      line:SetColorTexture(0.8, 0.8, 0.8, 0.9)
       line:SetSize(line_width, line_h)
       line:SetPoint("BOTTOMLEFT", my_frame, x_pos, 10)
       x_pos = x_pos + line_width
+      start_ts = start_ts + 86400
     end
-    start_ts = start_ts + 86400
+  else
+    frameTextInfo.text:SetText("Data is not ready yet. Please wait couple of seconds and try again")
   end
 end
 
@@ -930,6 +1058,15 @@ function get_max_val(name)
       end
     end
     start_ts = start_ts + 86400
+  end
+  if name == 'time_played' then
+	if max_val < 36000 then
+	  max_val = 36000
+	end
+  else
+	  if max_val < 10 then
+		  max_val = 10
+	  end
   end
   return max_val
 end
