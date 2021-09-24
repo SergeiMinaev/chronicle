@@ -4,6 +4,6 @@
 ## Interface: 20502
 ## SavedVariables: CHRONICLE_DB
 ##
-## Version: 0.2
+## Version: 0.2.1
 ## Author: Sergei Minaev
 Chronicle.lua
