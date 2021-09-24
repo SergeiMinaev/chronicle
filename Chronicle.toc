@@ -1,7 +1,7 @@
 ## Title: Chronicle
 ## Notes: Save your history
 ##
-## Interface: 80000
+## Interface: 20502
 ## SavedVariables: CHRONICLE_DB
 ##
 ## Version: 0.2
